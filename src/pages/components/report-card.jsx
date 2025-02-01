@@ -16,8 +16,19 @@ const ReportCard = (props) => {
   const [modalData, setModalData] = useState({});
 
   const handleEditGrade = (subject, semester) => {
-    setModalData({ subject, semester });
+    const initialGrade = studentsGrades[alunoId].grades.find(grade => grade.subject === subject)[semester];
+    setModalData({ subject, semester, initialGrade });
     setIsModalOpen(true);
+  };
+
+  const handleSaveGrade = (subject, semester, newGrade) => {
+    setStudentsGrades(prevGrades => {
+      const updatedGrades = { ...prevGrades };
+      const studentGrades = updatedGrades[alunoId].grades;
+      const gradeIndex = studentGrades.findIndex(grade => grade.subject === subject);
+      studentGrades[gradeIndex][semester] = newGrade;
+      return updatedGrades;
+    });
   };
 
   const handleCloseModal = () => {
@@ -28,7 +39,7 @@ const ReportCard = (props) => {
     navigate('/meus-alunos');
   };
 
-  const studentsGrades = {
+  const [studentsGrades, setStudentsGrades] = useState({
     1: {
       name: 'Alice Souza de Melo',
       grades: [
@@ -149,7 +160,7 @@ const ReportCard = (props) => {
         { subject: 'Matemática', firstSemester: 6.5, secondSemester: 7.0 },
       ]
     },
-  };
+  });
 
   const studentGrades = studentsGrades[alunoId]?.grades || [];
 
@@ -178,7 +189,7 @@ const ReportCard = (props) => {
                       <td>
                         <StyledGradeContainer>
                           <StyledGradeText grade={grade.firstSemester}>
-                            {grade.firstSemester}
+                            {grade.firstSemester.toFixed(1)}
                           </StyledGradeText>
                           <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>
                             <FontAwesomeIcon icon={faEdit} color="#fb8500" />
@@ -188,7 +199,7 @@ const ReportCard = (props) => {
                       <td>
                         <StyledGradeContainer>
                           <StyledGradeText grade={grade.secondSemester}>
-                            {grade.secondSemester}
+                            {grade.secondSemester.toFixed(1)}
                           </StyledGradeText>
                           <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>
                             <FontAwesomeIcon icon={faEdit} color="#fb8500" />
@@ -217,7 +228,7 @@ const ReportCard = (props) => {
           </StyledReturnStudentsListButton>
         </StyledStudentsListMainDiv>
       </StyledMainContainer>
-      {isModalOpen && <ModalEditGrade modalData={modalData} onClose={handleCloseModal} />}
+      {isModalOpen && <ModalEditGrade modalData={modalData} onClose={handleCloseModal} onSave={handleSaveGrade} />}
     </>
   );
 };

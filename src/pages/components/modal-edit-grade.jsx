@@ -10,7 +10,7 @@ const handleGradeChange = (e) => {
     const value = e.target.value;
     const regex = /^(?:\d(?:\.\d{0,2})?|10(?:\.0{0,2})?)$/;
     if (!regex.test(value)) {
-        setError('Favor inserir uma nota válida (0 a 10)');
+        setError('Favor inserir uma nota válida (0.0 a 10.0)');
     } else {
         setError('');
         setGrade(value);
