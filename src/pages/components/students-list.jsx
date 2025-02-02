@@ -25,9 +25,7 @@ const StudentsList = (props) => {
     navigate(`/boletim/${alunoId}`, { state: { studentName, gender } });
   };
 
-  const sortedStudents = students
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((student, index) => ({ ...student, id: index + 1 }));
+  const sortedStudents = students.sort((a, b) => a.name.localeCompare(b.name));
 
   return (
     <>
@@ -63,7 +61,6 @@ const StudentsList = (props) => {
 };
 
 export default StudentsList;
-
 // Styled components
 
 const StyledStudentsListMainDiv = styled.div`
