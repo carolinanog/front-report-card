@@ -1,22 +1,33 @@
-import { useParams, useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { Header } from "../../components/header";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
-import ModalEditGrade from './modal-edit-grade'; 
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import api from '../../api';
 
-const ReportCard = (props) => {
-  const location = useLocation();
+const ReportCard = () => {
   const navigate = useNavigate();
-  const { studentName, gender } = location.state || {};
+  const location = useLocation();
   const { alunoId } = useParams();
+  const { studentName, gender } = location.state || {};
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({});
+  const [studentsGrades, setStudentsGrades] = useState({});
+
+  useEffect(() => {
+    const fetchStudentGrades = async () => {
+      try {
+        const response = await api.get(`/boletim/${alunoId}`);
+        setStudentsGrades(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar dados do boletim:', error);
+      }
+    };
+
+    fetchStudentGrades();
+  }, [alunoId]);
 
   const handleEditGrade = (subject, semester) => {
-    const initialGrade = studentsGrades[alunoId].grades.find(grade => grade.subject === subject)[semester];
+    const initialGrade = studentsGrades.grades.find(grade => grade.subject === subject)[semester];
     setModalData({ subject, semester, initialGrade });
     setIsModalOpen(true);
   };
@@ -24,7 +35,7 @@ const ReportCard = (props) => {
   const handleSaveGrade = (subject, semester, newGrade) => {
     setStudentsGrades(prevGrades => {
       const updatedGrades = { ...prevGrades };
-      const studentGrades = updatedGrades[alunoId].grades;
+      const studentGrades = updatedGrades.grades;
       const gradeIndex = studentGrades.findIndex(grade => grade.subject === subject);
       studentGrades[gradeIndex][semester] = newGrade;
       return updatedGrades;
@@ -39,206 +50,62 @@ const ReportCard = (props) => {
     navigate('/meus-alunos');
   };
 
-  const [studentsGrades, setStudentsGrades] = useState({
-    1: {
-      name: 'Alice Souza de Melo',
-      grades: [
-        { subject: 'Artes', firstSemester: 8.5, secondSemester: 7.9 },
-        { subject: 'Ciências', firstSemester: 6.7, secondSemester: 5.8 },
-        { subject: 'Educação Física', firstSemester: 7.8, secondSemester: 8.2 },
-        { subject: 'Geografia', firstSemester: 6.9, secondSemester: 7.1 },
-        { subject: 'História', firstSemester: 6.4, secondSemester: 7.5 },
-        { subject: 'Língua Portuguesa', firstSemester: 8.2, secondSemester: 8.6 },
-        { subject: 'Matemática', firstSemester: 5.3, secondSemester: 5.7 },
-      ]
-    },
-    2: {
-      name: 'Bruno Soares',
-      grades: [
-        { subject: 'Artes', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Ciências', firstSemester: 6.0, secondSemester: 6.5 },
-        { subject: 'Educação Física', firstSemester: 7.0, secondSemester: 7.5 },
-        { subject: 'Geografia', firstSemester: 8.0, secondSemester: 8.3 },
-        { subject: 'História', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Língua Portuguesa', firstSemester: 8.5, secondSemester: 8.9 },
-        { subject: 'Matemática', firstSemester: 7.0, secondSemester: 7.5 },
-      ]
-    },
-    3: {
-      name: 'Carla Pereira',
-      grades: [
-        { subject: 'Artes', firstSemester: 9.0, secondSemester: 8.5 },
-        { subject: 'Ciências', firstSemester: 7.5, secondSemester: 7.0 },
-        { subject: 'Educação Física', firstSemester: 8.5, secondSemester: 8.0 },
-        { subject: 'Geografia', firstSemester: 8.5, secondSemester: 8.7 },
-        { subject: 'História', firstSemester: 6.5, secondSemester: 7.4 },
-        { subject: 'Língua Portuguesa', firstSemester: 9.0, secondSemester: 8.8 },
-        { subject: 'Matemática', firstSemester: 7.5, secondSemester: 7.8 },
-      ]
-    },
-    4: {
-      name: 'Daniel Oliveira',
-      grades: [
-        { subject: 'Artes', firstSemester: 6.5, secondSemester: 7.0 },
-        { subject: 'Ciências', firstSemester: 5.5, secondSemester: 6.0 },
-        { subject: 'Educação Física', firstSemester: 7.0, secondSemester: 7.5 },
-        { subject: 'Geografia', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'História', firstSemester: 6.0, secondSemester: 6.5 },
-        { subject: 'Língua Portuguesa', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Matemática', firstSemester: 6.5, secondSemester: 7.0 },
-      ]
-    },
-    5: {
-      name: 'Elisa Fernandes',
-      grades: [
-        { subject: 'Artes', firstSemester: 8.0, secondSemester: 8.5 },
-        { subject: 'Ciências', firstSemester: 7.0, secondSemester: 7.5 },
-        { subject: 'Educação Física', firstSemester: 8.0, secondSemester: 8.5 },
-        { subject: 'Geografia', firstSemester: 8.5, secondSemester: 8.9 },
-        { subject: 'História', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Língua Portuguesa', firstSemester: 8.5, secondSemester: 8.8 },
-        { subject: 'Matemática', firstSemester: 7.5, secondSemester: 7.9 },
-      ]
-    },
-    6: {
-      name: 'Felipe Costa',
-      grades: [
-        { subject: 'Artes', firstSemester: 7.0, secondSemester: 7.5 },
-        { subject: 'Ciências', firstSemester: 6.0, secondSemester: 6.5 },
-        { subject: 'Educação Física', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Geografia', firstSemester: 3.5, secondSemester: 5.6 },
-        { subject: 'História', firstSemester: 6.5, secondSemester: 7.0 },
-        { subject: 'Língua Portuguesa', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Matemática', firstSemester: 6.5, secondSemester: 7.0 },
-      ]
-    },
-    7: {
-      name: 'Gabriela Assis',
-      grades: [
-        { subject: 'Artes', firstSemester: 8.0, secondSemester: 8.5 },
-        { subject: 'Ciências', firstSemester: 7.0, secondSemester: 7.5 },
-        { subject: 'Educação Física', firstSemester: 8.0, secondSemester: 8.5 },
-        { subject: 'Geografia', firstSemester: 8.5, secondSemester: 8.9 },
-        { subject: 'História', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Língua Portuguesa', firstSemester: 8.5, secondSemester: 8.8 },
-        { subject: 'Matemática', firstSemester: 7.5, secondSemester: 7.9 },
-      ]
-    },
-    8: {
-      name: 'Henrique Lima',
-      grades: [
-        { subject: 'Artes', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Ciências', firstSemester: 6.5, secondSemester: 7.0 },
-        { subject: 'Educação Física', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Geografia', firstSemester: 4.2, secondSemester: 6.5 },
-        { subject: 'História', firstSemester: 5.6, secondSemester: 6.5 },
-        { subject: 'Língua Portuguesa', firstSemester: 6.0, secondSemester: 5.5 },
-        { subject: 'Matemática', firstSemester: 7.0, secondSemester: 7.5 },
-      ]
-    },
-    9: {
-      name: 'Isabela Santos',
-      grades: [
-        { subject: 'Artes', firstSemester: 8.5, secondSemester: 9.0 },
-        { subject: 'Ciências', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Educação Física', firstSemester: 8.5, secondSemester: 9.0 },
-        { subject: 'Geografia', firstSemester: 8.5, secondSemester: 8.9 },
-        { subject: 'História', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Língua Portuguesa', firstSemester: 8.5, secondSemester: 8.8 },
-        { subject: 'Matemática', firstSemester: 4.5, secondSemester: 5.2 },
-      ]
-    },
-    10: {
-      name: 'João Silva',
-      grades: [
-        { subject: 'Artes', firstSemester: 7.0, secondSemester: 7.5 },
-        { subject: 'Ciências', firstSemester: 6.0, secondSemester: 6.5 },
-        { subject: 'Educação Física', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Geografia', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'História', firstSemester: 6.5, secondSemester: 7.0 },
-        { subject: 'Língua Portuguesa', firstSemester: 7.5, secondSemester: 8.0 },
-        { subject: 'Matemática', firstSemester: 6.5, secondSemester: 7.0 },
-      ]
-    },
-  });
-
-  const studentGrades = studentsGrades[alunoId]?.grades || [];
-
   return (
-    <>
-      <Header />
-      <StyledMainContainer>
-        <StyledStudentsListMainDiv>
-          <div>
-            <h2>Boletim d{gender === 'female' ? 'a' : 'o'} alun{gender === 'female' ? 'a' : 'o'} {studentName}</h2>
-            <StyledTableContainer>
-              <StyledTableStudentsList>
-                <thead>
-                  <tr>
-                    <th>Disciplina</th>
-                    <th>1° Semestre </th>
-                    <th>2° Semestre</th>
-                    <th>Média Final</th>
-                    <th>Resultado Final</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {studentGrades.map((grade, index) => (
-                    <tr key={index}>
-                      <td>{grade.subject}</td>
-                      <td>
-                        <StyledGradeContainer>
-                          <StyledGradeText grade={grade.firstSemester}>
-                            {grade.firstSemester.toFixed(1)}
-                          </StyledGradeText>
-                          <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>
-                            <FontAwesomeIcon icon={faEdit} color="#fb8500" />
-                          </StyledEditButton>
-                        </StyledGradeContainer>
-                      </td>
-                      <td>
-                        <StyledGradeContainer>
-                          <StyledGradeText grade={grade.secondSemester}>
-                            {grade.secondSemester.toFixed(1)}
-                          </StyledGradeText>
-                          <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>
-                            <FontAwesomeIcon icon={faEdit} color="#fb8500" />
-                          </StyledEditButton>
-                        </StyledGradeContainer>
-                      </td>
-                      <td>
-                        <StyledGradeText grade={((grade.firstSemester + grade.secondSemester) / 2).toFixed(1)}>
-                          {((grade.firstSemester + grade.secondSemester) / 2).toFixed(1)}
-                        </StyledGradeText>
-                      </td>
-                      <td>
-                        <StyledGradeText grade={((grade.firstSemester + grade.secondSemester) / 2)}>
-                          {((grade.firstSemester + grade.secondSemester) / 2) >= 6 ? (gender === 'female' ? 'Aprovada' : 'Aprovado') : (gender === 'female' ? 'Reprovada' : 'Reprovado')}
-                        </StyledGradeText>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </StyledTableStudentsList>
-            </StyledTableContainer>
-          </div>
-          <StyledReturnStudentsListButton onClick={handleBackToList}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-            Voltar para a lista de alunos
-          </StyledReturnStudentsListButton>
-        </StyledStudentsListMainDiv>
-      </StyledMainContainer>
-      {isModalOpen && <ModalEditGrade modalData={modalData} onClose={handleCloseModal} onSave={handleSaveGrade} />}
-    </>
+    <StyledMainContainer>
+      <h2>Boletim de {studentsGrades.name}</h2>
+      <StyledTableContainer>
+        <StyledTableStudentsList>
+          <thead>
+            <tr>
+              <th>Disciplina</th>
+              <th>1º Semestre</th>
+              <th>2º Semestre</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {studentsGrades.grades && studentsGrades.grades.map((grade, index) => (
+              <tr key={index}>
+                <td>{grade.subject}</td>
+                <td>
+                  <StyledGradeText grade={grade.firstSemester}>{grade.firstSemester}</StyledGradeText>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '1 Semestre')}>Editar</StyledEditButton>
+                </td>
+                <td>
+                  <StyledGradeText grade={grade.secondSemester}>{grade.secondSemester}</StyledGradeText>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '2 Semestre')}>Editar</StyledEditButton>
+                </td>
+                <td>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '1 Semestre')}>Editar 1º Semestre</StyledEditButton>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '2 Semestre')}>Editar 2º Semestre</StyledEditButton>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </StyledTableStudentsList>
+      </StyledTableContainer>
+      {isModalOpen && (
+        <div>
+          <h3>Editar Nota</h3>
+          <p>Disciplina: {modalData.subject}</p>
+          <p>Semestre: {modalData.semester}</p>
+          <input
+            type="number"
+            value={modalData.initialGrade}
+            onChange={(e) => setModalData({ ...modalData, initialGrade: e.target.value })}
+          />
+          <button onClick={() => handleSaveGrade(modalData.subject, modalData.semester, modalData.initialGrade)}>Salvar</button>
+          <button onClick={handleCloseModal}>Fechar</button>
+        </div>
+      )}
+      <StyledReturnStudentsListButton onClick={handleBackToList}>Voltar para a lista de alunos</StyledReturnStudentsListButton>
+    </StyledMainContainer>
   );
 };
 
 export default ReportCard;
 
 // Styled components
-
-// Styled components
-
 const StyledMainContainer = styled.div`
   padding: 16px;
 `;
@@ -278,6 +145,7 @@ const StyledEditButton = styled.button`
   margin-left: 8px;
   color: #fb8500;
 `;
+
 const StyledReturnStudentsListButton = styled.button`
   background-color: #ffb703;
   border: none;
