@@ -1,4 +1,3 @@
-// filepath: /C:/Users/Esdra/Downloads/front-report-card/src/pages/components/report-card.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -72,11 +71,12 @@ const ReportCard = () => {
       await api.put(`/notas/${alunoId}/${disciplinaId}`, payload);
 
       setStudentsGrades(prevGrades => {
-        const updatedGrades = { ...prevGrades };
-        const studentGrades = updatedGrades.grades;
-        const gradeIndex = studentGrades.findIndex(grade => grade.subject === subject);
-        studentGrades[gradeIndex][semester] = newGrade;
-        return updatedGrades;
+        return {
+          ...prevGrades,
+          grades: prevGrades.grades.map(grade =>
+            grade.subject === subject ? { ...grade, [semester]: newGrade } : grade
+          ),
+        };
       });
 
       setIsModalOpen(false);
@@ -93,6 +93,11 @@ const ReportCard = () => {
     navigate('/meus-alunos');
   };
 
+  const isApproved = (firstSemester, secondSemester) => {
+    const average = (firstSemester + secondSemester) / 2;
+    return average >= 6.0 ? 'Aprovado' : 'Reprovado';
+  };
+
   return (
     <StyledMainContainer>
       <h2>Boletim de {studentsGrades.name}</h2>
@@ -103,7 +108,7 @@ const ReportCard = () => {
               <th>Disciplina</th>
               <th>1º Semestre</th>
               <th>2º Semestre</th>
-              <th>Ações</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -118,10 +123,7 @@ const ReportCard = () => {
                   <StyledGradeText grade={grade.secondSemester}>{grade.secondSemester}</StyledGradeText>
                   <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>Editar</StyledEditButton>
                 </td>
-                <td>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>Editar 1º Semestre</StyledEditButton>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>Editar 2º Semestre</StyledEditButton>
-                </td>
+                <td>{isApproved(grade.firstSemester, grade.secondSemester)}</td>
               </tr>
             ))}
           </tbody>
