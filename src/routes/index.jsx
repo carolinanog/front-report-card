@@ -13,6 +13,7 @@ export function SystemRouter() {
           <Route path="/boletim/:alunoId" element={<ReportCard />} />
           <Route path="/meus-alunos" element={<StudentsList />} />
           <Route path="/editar-nota" element={<ModalEditGrade />} />
+          <Route path="/notas/:alunoId/:disciplinaId" element={<ModalEditGrade />} />
         </Routes>
       </BrowserRouter>
     );
