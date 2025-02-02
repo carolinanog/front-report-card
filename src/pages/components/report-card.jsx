@@ -1,3 +1,4 @@
+// filepath: /C:/Users/Esdra/Downloads/front-report-card/src/pages/components/report-card.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -12,6 +13,7 @@ const ReportCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({});
   const [studentsGrades, setStudentsGrades] = useState({});
+  const [disciplinesMap, setDisciplinesMap] = useState({});
 
   useEffect(() => {
     const fetchStudentGrades = async () => {
@@ -23,7 +25,22 @@ const ReportCard = () => {
       }
     };
 
+    const fetchDisciplines = async () => {
+      try {
+        const response = await api.get('/disciplinas');
+        const disciplines = response.data;
+        const map = {};
+        disciplines.forEach(discipline => {
+          map[discipline.name] = discipline.id;
+        });
+        setDisciplinesMap(map);
+      } catch (error) {
+        console.error('Erro ao buscar disciplinas:', error);
+      }
+    };
+
     fetchStudentGrades();
+    fetchDisciplines();
   }, [alunoId]);
 
   const handleEditGrade = (subject, semester) => {
@@ -32,14 +49,40 @@ const ReportCard = () => {
     setIsModalOpen(true);
   };
 
-  const handleSaveGrade = (subject, semester, newGrade) => {
-    setStudentsGrades(prevGrades => {
-      const updatedGrades = { ...prevGrades };
-      const studentGrades = updatedGrades.grades;
-      const gradeIndex = studentGrades.findIndex(grade => grade.subject === subject);
-      studentGrades[gradeIndex][semester] = newGrade;
-      return updatedGrades;
-    });
+  const handleSaveGrade = async (subject, semester, newGrade) => {
+    try {
+      const gradeToUpdate = studentsGrades.grades.find(grade => grade.subject === subject);
+      if (!gradeToUpdate) {
+        console.error('Disciplina não encontrada');
+        return;
+      }
+
+      const disciplinaId = disciplinesMap[subject];
+      if (!disciplinaId) {
+        console.error('ID da disciplina não encontrado');
+        return;
+      }
+
+      const updatedGrade = { ...gradeToUpdate, [semester]: newGrade };
+
+      const payload = {
+        [semester]: newGrade
+      };
+
+      await api.put(`/notas/${alunoId}/${disciplinaId}`, payload);
+
+      setStudentsGrades(prevGrades => {
+        const updatedGrades = { ...prevGrades };
+        const studentGrades = updatedGrades.grades;
+        const gradeIndex = studentGrades.findIndex(grade => grade.subject === subject);
+        studentGrades[gradeIndex][semester] = newGrade;
+        return updatedGrades;
+      });
+
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Erro ao atualizar a nota:', error);
+    }
   };
 
   const handleCloseModal = () => {
@@ -69,15 +112,15 @@ const ReportCard = () => {
                 <td>{grade.subject}</td>
                 <td>
                   <StyledGradeText grade={grade.firstSemester}>{grade.firstSemester}</StyledGradeText>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '1 Semestre')}>Editar</StyledEditButton>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>Editar</StyledEditButton>
                 </td>
                 <td>
                   <StyledGradeText grade={grade.secondSemester}>{grade.secondSemester}</StyledGradeText>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '2 Semestre')}>Editar</StyledEditButton>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>Editar</StyledEditButton>
                 </td>
                 <td>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '1 Semestre')}>Editar 1º Semestre</StyledEditButton>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, '2 Semestre')}>Editar 2º Semestre</StyledEditButton>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>Editar 1º Semestre</StyledEditButton>
+                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>Editar 2º Semestre</StyledEditButton>
                 </td>
               </tr>
             ))}
