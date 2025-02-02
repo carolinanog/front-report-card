@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import api from '../../api';
+import { Header } from '../../components/header';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft, faEdit } from '@fortawesome/free-solid-svg-icons';
 
 const ReportCard = () => {
   const navigate = useNavigate();
@@ -62,10 +65,10 @@ const ReportCard = () => {
         return;
       }
 
-      const updatedGrade = { ...gradeToUpdate, [semester]: newGrade };
+      const updatedGrade = { ...gradeToUpdate, [semester]: parseFloat(newGrade) };
 
       const payload = {
-        [semester]: newGrade
+        [semester]: parseFloat(newGrade)
       };
 
       await api.put(`/notas/${alunoId}/${disciplinaId}`, payload);
@@ -74,7 +77,7 @@ const ReportCard = () => {
         return {
           ...prevGrades,
           grades: prevGrades.grades.map(grade =>
-            grade.subject === subject ? { ...grade, [semester]: newGrade } : grade
+            grade.subject === subject ? { ...grade, [semester]: parseFloat(newGrade) } : grade
           ),
         };
       });
@@ -93,58 +96,91 @@ const ReportCard = () => {
     navigate('/meus-alunos');
   };
 
-  const isApproved = (firstSemester, secondSemester) => {
-    const average = (firstSemester + secondSemester) / 2;
-    return average >= 6.0 ? 'Aprovado' : 'Reprovado';
+  const validateGrade = (value) => {
+    const number = parseFloat(value);
+    return !isNaN(number) && number >= 0.0 && number <= 10.0;
+  };
+
+  const handleGradeChange = (e) => {
+    const value = e.target.value;
+    if (validateGrade(value)) {
+      setModalData({ ...modalData, initialGrade: value });
+    }
   };
 
   return (
-    <StyledMainContainer>
-      <h2>Boletim de {studentsGrades.name}</h2>
-      <StyledTableContainer>
-        <StyledTableStudentsList>
-          <thead>
-            <tr>
-              <th>Disciplina</th>
-              <th>1º Semestre</th>
-              <th>2º Semestre</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {studentsGrades.grades && studentsGrades.grades.map((grade, index) => (
-              <tr key={index}>
-                <td>{grade.subject}</td>
-                <td>
-                  <StyledGradeText grade={grade.firstSemester}>{grade.firstSemester}</StyledGradeText>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>Editar</StyledEditButton>
-                </td>
-                <td>
-                  <StyledGradeText grade={grade.secondSemester}>{grade.secondSemester}</StyledGradeText>
-                  <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>Editar</StyledEditButton>
-                </td>
-                <td>{isApproved(grade.firstSemester, grade.secondSemester)}</td>
+    <>
+      <Header />
+      <StyledMainContainer>
+         <StyledStudentsListMainDiv>
+          <h2>Boletim d{gender === 'female' ? 'a' : 'o'} alun{gender === 'female' ? 'a' : 'o'} {studentName}</h2>
+          <StyledTableContainer>
+            <StyledTableStudentsList>
+            <thead>
+              <tr>
+                <th>Disciplina</th>
+                <th>1º Semestre</th>
+                <th>2º Semestre</th>
+                <th>Média Final</th>
+                <th>Resultado Final</th>
               </tr>
-            ))}
-          </tbody>
-        </StyledTableStudentsList>
-      </StyledTableContainer>
-      {isModalOpen && (
-        <div>
-          <h3>Editar Nota</h3>
-          <p>Disciplina: {modalData.subject}</p>
-          <p>Semestre: {modalData.semester}</p>
-          <input
-            type="number"
-            value={modalData.initialGrade}
-            onChange={(e) => setModalData({ ...modalData, initialGrade: e.target.value })}
-          />
-          <button onClick={() => handleSaveGrade(modalData.subject, modalData.semester, modalData.initialGrade)}>Salvar</button>
-          <button onClick={handleCloseModal}>Fechar</button>
-        </div>
+            </thead>
+            <tbody>
+              {studentsGrades.grades && studentsGrades.grades.map((grade, index) => (
+                <tr key={index}>
+                  <td>{grade.subject}</td>
+                  <td>
+                    <StyledGradeText grade={parseFloat(grade.firstSemester)}>{parseFloat(grade.firstSemester).toFixed(1)}</StyledGradeText>
+                    <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>
+                      <FontAwesomeIcon icon={faEdit} color="#fb8500" />
+                    </StyledEditButton>
+                  </td>
+                  <td>
+                    <StyledGradeText grade={parseFloat(grade.secondSemester)}>{parseFloat(grade.secondSemester).toFixed(1)}</StyledGradeText>
+                    <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>
+                      <FontAwesomeIcon icon={faEdit} color="#fb8500" />
+                    </StyledEditButton>
+                  </td>
+                  <td>
+                    <StyledGradeText grade={((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2).toFixed(1)}>
+                      {((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2).toFixed(1)}
+                    </StyledGradeText>
+                  </td>
+                  <td>
+                    <StyledGradeText grade={((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2)}>
+                      {((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2) >= 6 ? (gender === 'female' ? 'Aprovada' : 'Aprovado') : (gender === 'female' ? 'Reprovada' : 'Reprovado')}
+                    </StyledGradeText>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </StyledTableStudentsList>
+        </StyledTableContainer>
+        {isModalOpen && (
+          <StyledEditGrade>
+            <h3>Editar Nota</h3>
+            <p>Disciplina: {modalData.subject}</p>
+            <p>Semestre: {modalData.semester}</p>
+            <input
+              type="text"
+              min="0.0"
+              max="10.0"
+              value={modalData.initialGrade}
+              onChange={handleGradeChange}
+            />
+            <StyledButtonContainer>
+              <button onClick={() => handleSaveGrade(modalData.subject, modalData.semester, modalData.initialGrade)}>Salvar</button>
+              <button onClick={handleCloseModal}>Fechar</button>
+            </StyledButtonContainer>
+          </StyledEditGrade>
       )}
-      <StyledReturnStudentsListButton onClick={handleBackToList}>Voltar para a lista de alunos</StyledReturnStudentsListButton>
+      <StyledReturnStudentsListButton onClick={handleBackToList}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+          Voltar para a lista de alunos
+        </StyledReturnStudentsListButton>
+    </StyledStudentsListMainDiv>
     </StyledMainContainer>
+    </>
   );
 };
 
@@ -177,12 +213,6 @@ const StyledTableStudentsList = styled.table`
   }
 `;
 
-const StyledGradeContainer = styled.div`
-  display: in-line;
-  text-align: center;
-  align-items: center;
-`;
-
 const StyledEditButton = styled.button`
   background: none;
   border: none;
@@ -212,4 +242,65 @@ const StyledReturnStudentsListButton = styled.button`
 
 const StyledGradeText = styled.span`
   color: ${props => props.grade < 6 ? '#ae2012' : '#023e8a'};
+`;
+
+const StyledButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 16px;
+`;
+
+const StyledEditGrade = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1.0;
+  background-color: #8ecae6;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 90%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  h3 {
+    margin-top: 0;
+    color: #023e8a;
+  }
+
+  p {
+    margin: 8px 0;
+    color: #023e8a;
+  }
+
+  input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: #ffb703;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+    font-size: 16px;
+    color: #023e8a;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: #faa307;
+    }
+  }
 `;
