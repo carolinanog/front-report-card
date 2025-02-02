@@ -1,26 +1,29 @@
+import React, { useState, useEffect } from 'react';
 import styled from "styled-components";
 import { Header } from "../../components/header";
 import { useNavigate } from "react-router-dom";
+import api from '../../api';
 
 const StudentsList = (props) => {
   const navigate = useNavigate();
+  const [students, setStudents] = useState([]);
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await api.get('/alunos');
+        setStudents(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar dados dos alunos:', error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
 
   const handleShowReportCard = (alunoId, studentName, gender) => {
     navigate(`/boletim/${alunoId}`, { state: { studentName, gender } });
   };
-
-  const students = [
-    { id: 1, name: 'Alice Souza de Melo', gender: 'female' },
-    { id: 2, name: 'Bruno Soares', gender: 'male' },
-    { id: 3, name: 'Carla Pereira', gender: 'female' },
-    { id: 4, name: 'Daniel Oliveira', gender: 'male' },
-    { id: 5, name: 'Elisa Fernandes', gender: 'female' },
-    { id: 6, name: 'Felipe Costa', gender: 'male' },
-    { id: 7, name: 'Gabriela Assis', gender: 'female' },
-    { id: 8, name: 'Henrique Lima', gender: 'male' },
-    { id: 9, name: 'Isabela Santos', gender: 'female' },
-    { id: 10, name: 'João Silva', gender: 'male' },
-  ];
 
   const sortedStudents = students
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -40,13 +43,13 @@ const StudentsList = (props) => {
               </tr>
             </thead>
             <tbody>
-              {sortedStudents.map(student => (
+              {sortedStudents.map((student) => (
                 <tr key={student.id}>
                   <td>{student.id}</td>
                   <td>{student.name}</td>
                   <td>
                     <StyledGoToReportCardButton onClick={() => handleShowReportCard(student.id, student.name, student.gender)}>
-                      Ver boletim
+                      Ver Boletim
                     </StyledGoToReportCardButton>
                   </td>
                 </tr>
