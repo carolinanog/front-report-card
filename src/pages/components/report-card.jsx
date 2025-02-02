@@ -65,7 +65,6 @@ const ReportCard = () => {
         return;
       }
 
-      const updatedGrade = { ...gradeToUpdate, [semester]: parseFloat(newGrade) };
 
       const payload = {
         [semester]: parseFloat(newGrade)
@@ -160,7 +159,7 @@ const ReportCard = () => {
           <StyledEditGrade>
             <h3>Editar Nota</h3>
             <p>Disciplina: {modalData.subject}</p>
-            <p>Semestre: {modalData.semester}</p>
+            <p>Semestre: {modalData.semester === 'firstSemester' ? '1° Semestre' : '2° Semestre'}</p>
             <input
               type="text"
               min="0.0"
