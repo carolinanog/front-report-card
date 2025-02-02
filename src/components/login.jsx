@@ -33,7 +33,7 @@ class Login extends Component {
                         name="username"
                         value={username}
                         onChange={this.handleChange}
-                        placeholder="Username"
+                        placeholder="E-mail"
                         required
                     />
                     <Input
@@ -41,7 +41,7 @@ class Login extends Component {
                         name="password"
                         value={password}
                         onChange={this.handleChange}
-                        placeholder="Password"
+                        placeholder="Senha"
                         required
                     />
                     <Button type="submit">Login</Button>
