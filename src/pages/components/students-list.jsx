@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Header } from "../../components/header"; // Correct import
+import { Header } from "../../components/header";
 import { useNavigate } from "react-router-dom";
 
 const StudentsList = (props) => {
