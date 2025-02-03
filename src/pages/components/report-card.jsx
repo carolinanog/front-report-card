@@ -1,3 +1,4 @@
+// filepath: /C:/Users/Esdra/Downloads/front-report-card/src/pages/components/report-card.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
@@ -65,6 +66,7 @@ const ReportCard = () => {
         return;
       }
 
+      const updatedGrade = { ...gradeToUpdate, [semester]: newGrade };
 
       const payload = {
         [semester]: parseFloat(newGrade)
@@ -95,90 +97,88 @@ const ReportCard = () => {
     navigate('/meus-alunos');
   };
 
-  const validateGrade = (value) => {
-    const number = parseFloat(value);
-    return !isNaN(number) && number >= 0.0 && number <= 10.0;
-  };
-
   const handleGradeChange = (e) => {
     const value = e.target.value;
-    if (validateGrade(value)) {
-      setModalData({ ...modalData, initialGrade: value });
-    }
+    setModalData({ ...modalData, initialGrade: value });
+  };
+
+  const isApproved = (firstSemester, secondSemester) => {
+    const average = (firstSemester + secondSemester) / 2;
+    return average >= 6.0 ? 'Aprovado' : 'Reprovado';
   };
 
   return (
     <>
       <Header />
       <StyledMainContainer>
-         <StyledStudentsListMainDiv>
+        <StyledStudentsListMainDiv>
           <h2>Boletim d{gender === 'female' ? 'a' : 'o'} alun{gender === 'female' ? 'a' : 'o'} {studentName}</h2>
           <StyledTableContainer>
             <StyledTableStudentsList>
-            <thead>
-              <tr>
-                <th>Disciplina</th>
-                <th>1º Semestre</th>
-                <th>2º Semestre</th>
-                <th>Média Final</th>
-                <th>Resultado Final</th>
-              </tr>
-            </thead>
-            <tbody>
-              {studentsGrades.grades && studentsGrades.grades.map((grade, index) => (
-                <tr key={index}>
-                  <td>{grade.subject}</td>
-                  <td>
-                    <StyledGradeText grade={parseFloat(grade.firstSemester)}>{parseFloat(grade.firstSemester).toFixed(1)}</StyledGradeText>
-                    <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>
-                      <FontAwesomeIcon icon={faEdit} color="#fb8500" />
-                    </StyledEditButton>
-                  </td>
-                  <td>
-                    <StyledGradeText grade={parseFloat(grade.secondSemester)}>{parseFloat(grade.secondSemester).toFixed(1)}</StyledGradeText>
-                    <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>
-                      <FontAwesomeIcon icon={faEdit} color="#fb8500" />
-                    </StyledEditButton>
-                  </td>
-                  <td>
-                    <StyledGradeText grade={((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2).toFixed(1)}>
-                      {((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2).toFixed(1)}
-                    </StyledGradeText>
-                  </td>
-                  <td>
-                    <StyledGradeText grade={((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2)}>
-                      {((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2) >= 6 ? (gender === 'female' ? 'Aprovada' : 'Aprovado') : (gender === 'female' ? 'Reprovada' : 'Reprovado')}
-                    </StyledGradeText>
-                  </td>
+              <thead>
+                <tr>
+                  <th>Disciplina</th>
+                  <th>1º Semestre</th>
+                  <th>2º Semestre</th>
+                  <th>Média Final</th>
+                  <th>Resultado Final</th>
                 </tr>
-              ))}
-            </tbody>
-          </StyledTableStudentsList>
-        </StyledTableContainer>
-        {isModalOpen && (
-          <StyledEditGrade>
-            <h3>Editar Nota</h3>
-            <p>Disciplina: {modalData.subject}</p>
-            <p>Semestre: {modalData.semester === 'firstSemester' ? '1° Semestre' : '2° Semestre'}</p>
-            <input
-              type="text"
-              min="0.0"
-              max="10.0"
-              value={modalData.initialGrade}
-              onChange={handleGradeChange}
-            />
-            <StyledButtonContainer>
-              <button onClick={() => handleSaveGrade(modalData.subject, modalData.semester, modalData.initialGrade)}>Salvar</button>
-              <button onClick={handleCloseModal}>Fechar</button>
-            </StyledButtonContainer>
-          </StyledEditGrade>
-      )}
-      <StyledReturnStudentsListButton onClick={handleBackToList}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-          Voltar para a lista de alunos
-        </StyledReturnStudentsListButton>
-    </StyledStudentsListMainDiv>
-    </StyledMainContainer>
+              </thead>
+              <tbody>
+                {studentsGrades.grades && studentsGrades.grades.map((grade, index) => (
+                  <tr key={index}>
+                    <td>{grade.subject}</td>
+                    <td>
+                      <StyledGradeText grade={parseFloat(grade.firstSemester)}>{parseFloat(grade.firstSemester).toFixed(1)}</StyledGradeText>
+                      <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'firstSemester')}>
+                        <FontAwesomeIcon icon={faEdit} color="#fb8500" />
+                      </StyledEditButton>
+                    </td>
+                    <td>
+                      <StyledGradeText grade={parseFloat(grade.secondSemester)}>{parseFloat(grade.secondSemester).toFixed(1)}</StyledGradeText>
+                      <StyledEditButton onClick={() => handleEditGrade(grade.subject, 'secondSemester')}>
+                        <FontAwesomeIcon icon={faEdit} color="#fb8500" />
+                      </StyledEditButton>
+                    </td>
+                    <td>
+                      <StyledGradeText grade={((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2).toFixed(1)}>
+                        {((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2).toFixed(1)}
+                      </StyledGradeText>
+                    </td>
+                    <td>
+                      <StyledGradeText grade={((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2)}>
+                        {((parseFloat(grade.firstSemester) + parseFloat(grade.secondSemester)) / 2) >= 6 ? (gender === 'female' ? 'Aprovada' : 'Aprovado') : (gender === 'female' ? 'Reprovada' : 'Reprovado')}
+                      </StyledGradeText>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </StyledTableStudentsList>
+          </StyledTableContainer>
+          {isModalOpen && (
+            <StyledEditGrade>
+              <h3>Editar Nota</h3>
+              <p>Disciplina: {modalData.subject}</p>
+              <p>Semestre: {modalData.semester === 'firstSemester' ? '1° Semestre' : '2° Semestre'}</p>
+              <input
+                type="text"
+                min="0.0"
+                max="10.0"
+                value={modalData.initialGrade}
+                onChange={handleGradeChange}
+              />
+              <StyledButtonContainer>
+                <button onClick={() => handleSaveGrade(modalData.subject, modalData.semester, modalData.initialGrade)}>Salvar</button>
+                <button onClick={handleCloseModal}>Fechar</button>
+              </StyledButtonContainer>
+            </StyledEditGrade>
+          )}
+          <StyledReturnStudentsListButton onClick={handleBackToList}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+            Voltar para a lista de alunos
+          </StyledReturnStudentsListButton>
+        </StyledStudentsListMainDiv>
+      </StyledMainContainer>
     </>
   );
 };
