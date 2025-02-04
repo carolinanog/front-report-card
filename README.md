@@ -1,70 +1,89 @@
-# Getting Started with Create React App
+# 📚 Sistema de Notas da Escola Conhecimento  
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este projeto é um sistema de gerenciamento de notas desenvolvido para a **Escola Conhecimento**. A aplicação permite que os usuários façam login, visualizem a lista de alunos e acessem os boletins de notas.  
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📁 Estrutura do Projeto  
 
-### `npm start`
+A organização do código segue uma estrutura modular para facilitar a manutenção e escalabilidade.  
 
-Runs the app in the development mode.\
-Open [http://localhost:3001](http://localhost:3001) to view it in your browser.
+### **📂 public/**  
+Contém arquivos públicos que não são processados pelo Webpack.  
+- 📝 `index.html`: Arquivo HTML principal.  
+- ⚙️ `manifest.json`: Configurações do PWA.  
+- 🤖 `robots.txt`: Configurações para indexação por motores de busca.  
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### **📂 src/**  
+Diretório principal contendo todo o código-fonte da aplicação.  
+- 🔗 `api.js`: Configuração do **Axios** para requisições HTTP.  
+- 🏠 `App.js` e `App.jsx`: Componentes principais da aplicação.  
+- 🎨 `App.css` e `index.css`: Estilos globais.  
+- 🚀 `index.js`: Ponto de entrada da aplicação.  
 
-### `npm test`
+#### **📂 assets/**  
+📷 Armazena arquivos de mídia, como imagens.  
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### **📂 components/**  
+🧩 Componentes reutilizáveis da aplicação.  
+- 🏷️ `header.jsx`: Componente de cabeçalho.  
+- 🔓 `logout-button.jsx`: Botão de logout.  
 
-### `npm run build`
+#### **📂 pages/**  
+📄 Componentes das páginas principais.  
+- **📂 components/**: Componentes específicos de páginas.  
+  - 📝 `report-card.jsx`: Componente de boletim.  
+  - 📋 `students-list.jsx`: Componente de lista de alunos.  
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### **📂 routes/**  
+🛤️ Configuração das rotas da aplicação.  
+- 🔀 `index.jsx`: Define e gerencia as rotas com **react-router-dom**.  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### **📂 services/**  
+🔧 Serviços para comunicação com a API.  
+- 🔑 `authService.js`: Serviço de autenticação.  
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ⚙️ Pré-requisitos  
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Antes de instalar e executar o projeto, certifique-se de ter as seguintes dependências instaladas:  
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **📌 Node.js**  
+- **📌 npm** (ou **yarn**)  
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🚀 Instalação  
 
-## Learn More
+Siga os passos abaixo para clonar e rodar o projeto localmente:  
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```sh
+# 1️⃣ Clone o repositório  
+git clone https://github.com/seu-usuario/front-report-card.git  
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# 2️⃣ Acesse o diretório do projeto  
+cd front-report-card  
 
-### Code Splitting
+# 3️⃣ Instale as dependências  
+npm install  
+# ou  
+yarn install  
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# 4️⃣ Inicie o servidor de desenvolvimento  
+npm start  
+# ou  
+yarn start  
 
-### Analyzing the Bundle Size
+📌 Funcionalidades
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+✔️ Autenticação: Implementada no componente login.jsx e gerenciada pelo serviço authService.js.
+✔️ Navegação: Controlada pelo react-router-dom em App.jsx e routes/index.jsx.
+✔️ Requisições HTTP: Feitas com Axios, configurado em api.js.
+✔️ Estilização: Utilização de styled-components para personalização visual.
+✔️ Componentes Reutilizáveis: Como Header e LogoutButton.
+📜 Licença
 
-### Making a Progressive Web App
+Este projeto é distribuído sob a Licença MIT. Consulte o arquivo LICENSE para mais detalhes.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+💡 Feito com ❤️ para a Escola Conhecimento 🎓
