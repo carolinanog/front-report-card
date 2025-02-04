@@ -60,7 +60,7 @@ Siga os passos abaixo para clonar e rodar o projeto localmente:
 
 ```sh
 # 1️⃣ Clone o repositório  
-git clone https://github.com/seu-usuario/front-report-card.git  
+git clone https://github.com/carolinanog/front-report-card.git  
 
 # 2️⃣ Acesse o diretório do projeto  
 cd front-report-card  
